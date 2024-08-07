@@ -50,5 +50,6 @@ const productUpload = multer({ storage: productStorage });
 module.exports = {
   dpUpload,
   categoryUpload,
+  subCategoryUpload,
   productUpload
 };
