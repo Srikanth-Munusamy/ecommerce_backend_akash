@@ -44,7 +44,7 @@ const Order = sequelize.define('Order', {
 });
 
 // Define associations
-User.hasMany(Order, { foreignKey: 'userId', as: 'orders' });
-Order.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+User.hasMany(Order, { foreignKey: 'userId'});
+Order.belongsTo(User, { foreignKey: 'userId' });
 
 module.exports = Order;

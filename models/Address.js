@@ -47,7 +47,7 @@ const Address = sequelize.define('Address', {
   underscored: true, // Use snake_case column names
 });
 
-User.hasMany(Address, { foreignKey: 'userId', as: 'addresses' });
-Address.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+User.hasMany(Address, { foreignKey: 'userId'});
+Address.belongsTo(User, { foreignKey: 'userId'});
 
 module.exports = Address;

@@ -6,7 +6,10 @@ const User = require('../models/User');
 
 // Utility function to generate JWT
 const generateToken = (user) => {
-  return jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET_KEY, { expiresIn: '1h' });
+  // Generate a token with the user ID and other relevant information
+  return jwt.sign({ userId: user.userId, role: user.role }, process.env.JWT_SECRET_KEY, {
+    expiresIn: '1h', // Set token expiration time as needed
+  });
 };
 
 // Registration

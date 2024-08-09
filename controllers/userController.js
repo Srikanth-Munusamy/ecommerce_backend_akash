@@ -7,7 +7,7 @@ const path = require('path');
 // Example of another possible function, such as getting user details
 exports.getUser = async (req, res) => {
     try {
-      const user = await User.findByPk(req.user.id, { attributes: { exclude: ['password'] } });
+      const user = await User.findByPk(req.user.userId, { attributes: { exclude: ['password'] } });
       if (!user) {
         return res.status(404).json({ error: 'User not found' });
       }
@@ -24,7 +24,7 @@ exports.getUser = async (req, res) => {
   
     try {
       // Find the user by ID
-      const user = await User.findByPk(req.user.id);
+      const user = await User.findByPk(req.user.userId);
   
       if (!user) {
         return res.status(404).json({ error: 'User not found' });

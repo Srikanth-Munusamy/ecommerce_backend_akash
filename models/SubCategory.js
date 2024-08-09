@@ -8,12 +8,12 @@ const SubCategory = sequelize.define('SubCategory', {
         autoIncrement: true,
         primaryKey: true,
     },
-    SubCategoryName: {
+    subCategoryName: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
     },
-    SubCategoryImage: {
+    subCategoryImage: {
         type: DataTypes.STRING,
         allowNull: true,
     },
@@ -29,6 +29,8 @@ const SubCategory = sequelize.define('SubCategory', {
     timestamps: true, // Adds createdAt and updatedAt fields
 });
 // Set up association
-SubCategory.belongsTo(Category, { foreignKey: 'categoryId', as: 'category' });
+Category.hasMany(SubCategory, { foreignKey: 'categoryId'});
+
+SubCategory.belongsTo(Category, { foreignKey: 'categoryId' });
 
 module.exports = SubCategory;

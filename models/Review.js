@@ -44,10 +44,10 @@ userId: {
   timestamps: true,
 });
 
-User.hasMany(Review, { foreignKey: 'userId', as: 'reviews' });
-Review.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+User.hasMany(Review, { foreignKey: 'userId'});
+Review.belongsTo(User, { foreignKey: 'userId'});
 
-Product.hasMany(Review, { foreignKey: 'productId', as: 'reviews' });
-Review.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+Product.hasMany(Review, { foreignKey: 'productId' });
+Review.belongsTo(Product, { foreignKey: 'productId' });
 
 module.exports = Review;

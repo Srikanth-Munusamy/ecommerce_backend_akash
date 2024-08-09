@@ -99,7 +99,7 @@ exports.deleteSubCategory = async (req, res) => {
 // Get all sub-categories
 exports.getAllSubCategories = async (req, res) => {
   try {
-    const subCategories = await SubCategory.findAll({ include: Category });
+    const subCategories = await SubCategory.findAll();
     res.status(200).json(subCategories);
   } catch (err) {
     res.status(500).json({ error: 'Error fetching sub-categories' });

@@ -37,10 +37,10 @@ const Cart = sequelize.define('Cart', {
  });
 
 // Associations
-User.hasMany(Cart, { foreignKey: 'userId', as: 'carts' });
-Cart.belongsTo(User, { foreignKey: 'userId', as: 'user' });
+User.hasMany(Cart, { foreignKey: 'userId'});
+Cart.belongsTo(User, { foreignKey: 'userId'});
 
-Product.hasMany(Cart, { foreignKey: 'productId', as: 'carts' });
-Cart.belongsTo(Product, { foreignKey: 'productId', as: 'product' });
+Product.hasMany(Cart, { foreignKey: 'productId' });
+Cart.belongsTo(Product, { foreignKey: 'productId' });
 
 module.exports = Cart;

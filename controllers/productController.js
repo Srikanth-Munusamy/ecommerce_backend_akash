@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const Product = require('../models/Product');
+const SubCategory = require('../models/SubCategory');
 
 // Create a new product
 exports.createProduct = async (req, res) => {
@@ -28,86 +29,85 @@ exports.createProduct = async (req, res) => {
 
 // Update a product
 exports.updateProduct = async (req, res) => {
-  const { id } = req.params;
-  const { productName, productBrand, originalPrice, discountPrice, description, stock, isFeatured, subCategoryId } = req.body;
-  const productImages = req.files ? req.files.map(file => file.filename) : [];
-
+  const productId = req.params.id;
+    
+const { productName, productBrand, originalPrice, discountPrice, description, stock, isFeatured, subCategoryId } = req.body;
+  
   try {
-    const product = await Product.findByPk(id);
+    const product = await Product.findOne({ where: { productId } });
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });
     }
-
-    // Save old product images path to delete later if new images are uploaded
-    const oldProductImages = product.productImages ? product.productImages.split(',') : [];
-    const oldProductImagesPaths = oldProductImages.map(image => path.join(__dirname, '..', 'uploads', 'product', image));
-
+    
     // Update product fields
-    product.productName = productName || product.productName;
-    product.productBrand = productBrand || product.productBrand;
-    product.originalPrice = originalPrice || product.originalPrice;
-    product.discountPrice = discountPrice || product.discountPrice;
-    product.description = description || product.description;
-    product.stock = stock || product.stock;
-    product.isFeatured = isFeatured !== undefined ? isFeatured : product.isFeatured;
-    product.subCategoryId = subCategoryId || product.subCategoryId;
-
-    // Update product images if new images are provided
-    if (productImages.length > 0) {
-      product.productImages = productImages.join(',');
-
-      // Remove old images
-      oldProductImagesPaths.forEach(imagePath => {
-        fs.unlink(imagePath, (err) => {
-          if (err) {
-            console.error(`Failed to delete product image: ${err.message}`);
-          }
-        });
-      });
+    
+    let updatedImages = req.files && req.files.length > 0 ? req.files.map(file => file.filename) :product.productImages;
+   
+    const updatedFields = {
+   
+    productName : productName || product.productName,
+    productBrand : productBrand || product.productBrand,
+    originalPrice : originalPrice || product.originalPrice,
+    discountPrice : discountPrice || product.discountPrice,
+    description : description || product.description,
+    stock : stock || product.stock,
+    isFeatured : isFeatured !== undefined ? isFeatured : product.isFeatured,
+    subCategoryId : subCategoryId || product.subCategoryId,
+    productImages: updatedImages,
+   
     }
 
-    await product.save();
-    res.status(200).json({ message: 'Product updated successfully', product });
-  } catch (err) {
-    res.status(500).json({ error: 'Error updating product' });
+    const isProductUpdated = await Product.update(
+      updatedFields,
+      { where: { productId: productId } }
+    );
+    if (isProductUpdated[0] === 1) {
+      if (req.files && req.files.length > 0) {
+        for (let i = 0; i < product.productImages?.length; i++) {
+          const deletePath = "../uploads/product/" + product.productImages[i];
+          fs.unlinkSync(path.join(__dirname, deletePath));
+        }
+      }
+      return res.status(200).send({ message: 'Product updated successfully' });
+    }
+    return res.status(200).send({ message: "Product not found", isUpdated: isProductUpdated[0] });
+  } catch (error) {
+    return res.status(401).send({ message: error.message });
   }
 };
 
 // Delete a product
 exports.deleteProduct = async (req, res) => {
-  const { id } = req.params;
-
   try {
-    const product = await Product.findByPk(id);
+    const productId = req.params.id;
+    
+    const product = await Product.findOne({ where: { productId } });
+
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).send({ message: 'Product not found' });
     }
+    if (product.productImages) {
+      for( let i=0;i<product.productImages?.length;i++){
+        const deletePath = "../uploads/product/" +product.productImages[i];
+           fs.unlinkSync(path.join(__dirname, deletePath));
+      }
+      
+    }
+    await Product.destroy({ where: { productId } });
 
-    // Save product images path to delete
-    const productImages = product.productImages ? product.productImages.split(',') : [];
-    const productImagesPaths = productImages.map(image => path.join(__dirname, '..', 'uploads', 'product', image));
-
-    await product.destroy();
-
-    // Remove product images
-    productImagesPaths.forEach(imagePath => {
-      fs.unlink(imagePath, (err) => {
-        if (err) {
-          console.error(`Failed to delete product image: ${err.message}`);
-        }
-      });
-    });
-
-    res.status(200).json({ message: 'Product deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: 'Error deleting product' });
+    return res.status(200).send({ message: 'Product deleted successfully' });
+  } catch (error) {
+    return res.status(500).json({ message: 'Error deleting product', error: error.message });
   }
 };
 
 // Get all products
 exports.getAllProducts = async (req, res) => {
   try {
-    const products = await Product.findAll();
+    const products = await Product.findAll({
+      include: {
+        model: SubCategory},
+    });
     res.status(200).json(products);
   } catch (err) {
     res.status(500).json({ error: 'Error fetching products' });
