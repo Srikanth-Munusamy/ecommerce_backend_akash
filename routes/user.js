@@ -12,6 +12,7 @@ router.put('/profile', isAuthenticated, uploadMiddleware.dpUpload.single('profil
 
 // Admin route to view all users
 router.get('/users', isAuthenticated,isAdmin,  userController.getAllUsers);
+router.get('/:id', isAuthenticated,isAdmin,  userController.getUserById);
 
 module.exports = router;
 

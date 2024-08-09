@@ -48,13 +48,13 @@ app.use('/address', addressRoutes);
 
 // Test route
 app.get('/', (req, res) => {
-  res.send('Welcome to the Express App!');
+  res.json('Welcome to the Express App!');
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).send('Something went wrong!');
+  res.status(500).json('Something went wrong!');
 });
 
 const PORT=process.env.PORT ;

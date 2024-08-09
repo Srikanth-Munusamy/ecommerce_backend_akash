@@ -68,11 +68,11 @@ const { productName, productBrand, originalPrice, discountPrice, description, st
           fs.unlinkSync(path.join(__dirname, deletePath));
         }
       }
-      return res.status(200).send({ message: 'Product updated successfully' });
+      return res.status(200).json({ message: 'Product updated successfully' });
     }
-    return res.status(200).send({ message: "Product not found", isUpdated: isProductUpdated[0] });
+    return res.status(200).json({ message: "Product not found", isUpdated: isProductUpdated[0] });
   } catch (error) {
-    return res.status(401).send({ message: error.message });
+    return res.status(401).json({ message: error.message });
   }
 };
 
@@ -84,7 +84,7 @@ exports.deleteProduct = async (req, res) => {
     const product = await Product.findOne({ where: { productId } });
 
     if (!product) {
-      return res.status(404).send({ message: 'Product not found' });
+      return res.status(404).json({ message: 'Product not found' });
     }
     if (product.productImages) {
       for( let i=0;i<product.productImages?.length;i++){
@@ -95,7 +95,7 @@ exports.deleteProduct = async (req, res) => {
     }
     await Product.destroy({ where: { productId } });
 
-    return res.status(200).send({ message: 'Product deleted successfully' });
+    return res.status(200).json({ message: 'Product deleted successfully' });
   } catch (error) {
     return res.status(500).json({ message: 'Error deleting product', error: error.message });
   }

@@ -1,10 +1,9 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
-  
 const fs = require('fs');
 const path = require('path');
 
-// Example of another possible function, such as getting user details
+// Display User Profile
 exports.getUser = async (req, res) => {
     try {
       const user = await User.findByPk(req.user.userId, { attributes: { exclude: ['password'] } });
@@ -74,6 +73,17 @@ exports.getAllUsers = async (req, res) => {
   try {
     const users = await User.findAll({ attributes: { exclude: ['password'] } });
     res.status(200).json({ users });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+// Admin view user by id
+exports.getUserById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const user = await User.findByPk(id, { attributes: { exclude: ['password'] } });
+    res.status(200).json({ user });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
