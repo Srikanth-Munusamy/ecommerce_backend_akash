@@ -58,8 +58,13 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING,
     allowNull: false,
     defaultValue: 'user',
-  },
-}, {
+  }, 
+  isActive: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false,
+  }
+},
+ {
   // Additional options
   timestamps: true, // Adds createdAt and updatedAt fields
  });

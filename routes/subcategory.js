@@ -10,7 +10,7 @@ router.put('/:id', isAuthenticated,isAdmin, uploadMiddleware.subCategoryUpload.s
 router.delete('/:id', isAuthenticated,isAdmin, subCategoryController.deleteSubCategory);
 
 // User and Admin routes
-router.get('/',isAuthenticated ,subCategoryController.getAllSubCategories);
-router.get('/:id', isAuthenticated,subCategoryController.getSubCategoryById);
+router.get('/',subCategoryController.getAllSubCategories);
+router.get('/:id',subCategoryController.getSubCategoryById);
 
 module.exports = router;

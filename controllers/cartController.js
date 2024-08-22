@@ -14,6 +14,14 @@ exports.addItemToCart = async (req, res) => {
       return res.status(404).json({ error: 'Product not found' });
     }
 
+    // Ensure the quantity is valid
+    if (quantity <= 0) {
+      return res.status(400).json({ error: 'Quantity must be greater than zero' });
+    }
+    if (quantity > product.stock) { // Assuming you have a stock field
+      return res.status(400).json({ error: 'Quantity exceeds available stock' });
+    }
+
     // Check if the item is already in the cart
     const existingCartItem = await Cart.findOne({
       where: { userId, productId }
@@ -21,7 +29,11 @@ exports.addItemToCart = async (req, res) => {
 
     if (existingCartItem) {
       // Update the quantity if the product is already in the cart
-      existingCartItem.quantity += quantity;
+      const newQuantity = existingCartItem.quantity + quantity;
+      if (newQuantity > product.stock) {
+        return res.status(400).json({ error: 'Quantity exceeds available stock' });
+      }
+      existingCartItem.quantity = newQuantity;
       await existingCartItem.save();
     } else {
       // Add the product to the cart
@@ -44,10 +56,18 @@ exports.updateCartItem = async (req, res) => {
   const { quantity } = req.body;
 
   try {
-    const cartItem = await Cart.findByPk(cartId);
+    const cartItem = await Cart.findByPk(cartId, { include: [Product] });
 
     if (!cartItem) {
       return res.status(404).json({ error: 'Cart item not found' });
+    }
+
+    // Validate quantity
+    if (quantity <= 0) {
+      return res.status(400).json({ error: 'Quantity must be greater than zero' });
+    }
+    if (quantity > cartItem.Product.stock) {
+      return res.status(400).json({ error: 'Quantity exceeds available stock' });
     }
 
     cartItem.quantity = quantity;
@@ -84,7 +104,10 @@ exports.getUserCart = async (req, res) => {
   try {
     const cartItems = await Cart.findAll({
       where: { userId },
-      include: [Product]
+      include: [{
+        model: Product,
+        attributes: ['id', 'name', 'price', 'stock'], // Include only necessary fields
+      }]
     });
 
     res.status(200).json(cartItems);

@@ -35,7 +35,6 @@ app.use('/uploads/product', express.static(path.join(__dirname, 'uploads/product
 // Route setup
 app.use('/auth', authRoutes);
 
-
 app.use('/user', userRoutes);
 app.use('/category', categoryRoutes);
 app.use('/subcategory', subCategoryRoutes);
